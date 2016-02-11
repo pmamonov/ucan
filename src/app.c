@@ -170,7 +170,6 @@ static void can_ping(int id, int count)
 	msg.type = CAN_MSG_PING;
 	msg.sender = can_id;
 
-	can_stat_reset();
 	tim = xTaskGetTickCount();
 
 	ping_tx = 0;
@@ -381,7 +380,6 @@ void task_can(void *vpars)
 			if (msg.sender != 0) {
 				to = msg.sender;
 				msg.sender = 0;
-				msg.data = msg.data;
 				can_xmit(to, &msg, len);
 			} else {
 				taskDISABLE_INTERRUPTS();
