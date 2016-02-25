@@ -148,15 +148,20 @@ static inline void ping_add_pending(uint32_t x)
 static inline int ping_remove_pending(uint32_t x)
 {
 	int i = 0;
+	uint32_t max = 0;
 
-	while (i < TXRXDELTA && ping_pending[i] != x)
+	while (i < TXRXDELTA && ping_pending[i] != x) {
+		if (ping_pending[i] && max < ping_pending[i])
+			max = ping_pending[i];
 		i++;
+	}
 	if (i < TXRXDELTA) {
 		ping_pending[i] = 0;
 		if (ping_trace)
 			printf("a %08x\r\n", x);
 		return 1;
 	}
+	printf("orphaned: %08x max: %08x\r\n", x, max);
 	return 0;
 }
 
