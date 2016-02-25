@@ -201,8 +201,9 @@ void can_xmit(unsigned int id, unsigned char *data, int len)
 	TxMessage.DLC = len;
 	TxMessage.RTR = CAN_RTR_DATA;
 	TxMessage.IDE = CAN_ID_STD;
-	while (len--)
-		TxMessage.Data[len] = data[len];
+	if (len > 8)
+		len = 8;
+	memcpy(TxMessage.Data, data, len);
 	while (CAN_Transmit(CANx, &TxMessage) == CAN_TxStatus_NoMailBox)
 		;
 #ifdef TARGET_F407
