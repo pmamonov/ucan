@@ -17,9 +17,7 @@
 #include "uqueue.h"
 
 #define RX_QUEUE_LEN 100
-CanRxMsg  rx_msg[RX_QUEUE_LEN];
 CanRxMsg  rx_msg_isr[RX_QUEUE_LEN];
-struct queue rx_queue;
 struct queue rx_queue_isr;
 
 unsigned int can_id = 0;
@@ -142,7 +140,6 @@ static void CAN_Config(void)
 void can_init()
 {
 	can_stat_reset();
-	queue_init(&rx_queue, sizeof(rx_msg[0]), RX_QUEUE_LEN, &rx_msg[0]);
 	queue_init(&rx_queue_isr, sizeof(rx_msg_isr[0]), RX_QUEUE_LEN, &rx_msg_isr[0]);
 	NVIC_Config();
 	CAN_Config();
@@ -157,9 +154,8 @@ int can_recv(unsigned char *msg)
 	CanRxMsg cmsg;
 	int ret = -1;
 
-	while (queue_pop(&rx_queue, &cmsg)) {
+	while (queue_pop(&rx_queue_isr, &cmsg)) {
 		vTaskDelay(1);
-		queue_swap(&rx_queue, &rx_queue_isr);
 	}
 	memcpy(msg, cmsg.Data, cmsg.DLC);
 	return cmsg.DLC;
