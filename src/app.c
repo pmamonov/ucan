@@ -161,7 +161,8 @@ static inline int ping_remove_pending(uint32_t x)
 			printf("a %08x\r\n", x);
 		return 1;
 	}
-	printf("orphaned: %08x max: %08x\r\n", x, max);
+	if (ping_trace)
+		printf("orphaned: %08x max: %08x\r\n", x, max);
 	return 0;
 }
 
