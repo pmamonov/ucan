@@ -18,6 +18,8 @@ static int queue_lock(struct queue *q)
 static void queue_unlock(struct queue *q)
 {
 	taskDISABLE_INTERRUPTS();
+		if (!q->sem)
+			printf("BUG: %s: sem = %d\n\r", __func__, q->sem);
 		q->sem = 0;
 	taskENABLE_INTERRUPTS();
 }
@@ -33,6 +35,16 @@ void queue_init(struct queue *q, int sz, int cap, void *ptr)
 	q->sem = 0;
 }
 
+static inline void queue_check(struct queue *q, char *func)
+{
+	if (q->len != (q->in >= q->out ? q->in - q->out : q->in + q->cap - q->out))
+		printf("BUG: %s: in: %d out: %d len: %d\n\r",
+			func,
+			q->in,
+			q->out,
+			q->len);
+}
+
 int queue_push(struct queue *q, void *ptr)
 {
 	if (queue_lock(q))
@@ -44,6 +56,7 @@ int queue_push(struct queue *q, void *ptr)
 	memcpy(q->ptr + q->sz * q->in, ptr, q->sz);
 	q->in = (q->in + 1) % q->cap;
 	q->len += 1;
+	queue_check(q, __func__);
 	queue_unlock(q);
 	return 0;
 }
@@ -59,6 +72,7 @@ int queue_pop(struct queue *q, void *ptr)
 	memcpy(ptr, q->ptr + q->sz * q->out, q->sz);
 	q->out = (q->out + 1) % q->cap;
 	q->len -= 1;
+	queue_check(q, __func__);
 	queue_unlock(q);
 	return 0;
 }
