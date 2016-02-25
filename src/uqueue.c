@@ -28,6 +28,8 @@ void queue_init(struct queue *q, int sz, int cap, void *ptr)
 	q->cap = cap;
 	q->ptr = ptr;
 	q->len = 0;
+	q->in = 0;
+	q->out = 0;
 	q->sem = 0;
 }
 
