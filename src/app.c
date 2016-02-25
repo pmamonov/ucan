@@ -376,7 +376,7 @@ void task_can(void *vpars)
 {
 	struct can_msg msg;
 	unsigned int to;
-	int len;
+	int len, ret;
 
 	while (1) {
 		len = can_recv(&msg);
@@ -388,8 +388,11 @@ void task_can(void *vpars)
 				can_xmit(to, &msg, len);
 			} else {
 				taskDISABLE_INTERRUPTS();
-				ping_rx += ping_remove_pending(msg.data);
-				ping_pending_count -= 1;
+				if (ping_pending_count) {
+					ret = ping_remove_pending(msg.data);
+					ping_rx += ret;
+					ping_pending_count -= ret;
+				}
 				taskENABLE_INTERRUPTS();
 			}
 		}
