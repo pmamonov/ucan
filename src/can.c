@@ -16,7 +16,6 @@
 #include "can_msg.h"
 #include "uqueue.h"
 
-#define RX_QUEUE_LEN 100
 CanRxMsg  rx_msg[RX_QUEUE_LEN];
 CanRxMsg  rx_msg_isr[RX_QUEUE_LEN];
 struct queue rx_queue;

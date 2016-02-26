@@ -27,8 +27,8 @@
 #include "delay.h"
 #include "version.h"
 
-#define TXRXDELTA 50
-#define PING_TIMEOUT 1
+#define TXRXDELTA 	RX_QUEUE_LEN
+#define PING_TIMEOUT	(TXRXDELTA / 10)
 static volatile uint32_t ping_pending[TXRXDELTA];
 static volatile int ping_rx, ping_tx, ping_pending_count, ping_trace;
 

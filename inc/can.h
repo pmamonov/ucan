@@ -4,6 +4,8 @@
 #include "FreeRTOS.h"
 #include "task.h"
 
+#define RX_QUEUE_LEN 100
+
 #ifdef TARGET_F407
 #include "stm32f4xx_can.h"
 
