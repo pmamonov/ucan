@@ -69,8 +69,11 @@ static void NVIC_Config(void)
 
 	NVIC_InitStructure.NVIC_IRQChannel = CAN_IRQ;
 #ifdef TARGET_F407
-	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0x0;
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = configMAX_SYSCALL_INTERRUPT_PRIORITY >> 4;
 	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0x0;
+#endif
+#ifdef TARGET_F091
+	NVIC_InitStructure.NVIC_IRQChannelPriority = configMAX_SYSCALL_INTERRUPT_PRIORITY >> 6;
 #endif
 	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
 	NVIC_Init(&NVIC_InitStructure);
