@@ -35,20 +35,23 @@ void queue_init(struct queue *q, int sz, int cap, void *ptr)
 	q->in = 0;
 	q->out = 0;
 	q->sem = 0;
+	q->last = NULL;
 }
 
 static inline void queue_check(struct queue *q, char *func)
 {
 	if (bug_report &&
 	    q->len != (q->in >= q->out ? q->in - q->out : q->in + q->cap - q->out)) {
-		printf("BUG: %s: in=%d out=%d len=%d q=%p\n\r",
+		printf("BUG: %s: in=%d out=%d len=%d q=%p last=%s\n\r",
 			func,
 			q->in,
 			q->out,
 			q->len,
-			q);
+			q,
+			q->last);
 		bug_report--;
 	}
+	q->last = func;
 }
 
 int queue_push(struct queue *q, void *ptr)

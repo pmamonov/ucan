@@ -8,6 +8,7 @@ struct queue {
 	int in, out, len, cap, sz;
 	void *ptr;
 	int sem;
+	char *last;
 };
 
 void queue_init(struct queue *q, int sz, int cap, void *ptr);
