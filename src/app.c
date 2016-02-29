@@ -64,6 +64,9 @@ int main(void)
 #endif /* TARGET_F091 */
 
 #ifdef TARGET_F407
+	/* Required by the FreeRTOS */
+	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
+
 	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOD, ENABLE);
 	sGPIOinit.GPIO_Pin = LED_PIN;
 	sGPIOinit.GPIO_Mode = GPIO_Mode_OUT;

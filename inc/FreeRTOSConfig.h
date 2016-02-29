@@ -47,8 +47,12 @@ your application. */
 #define configTIMER_TASK_STACK_DEPTH        configMINIMAL_STACK_SIZE
 
 #define configKERNEL_INTERRUPT_PRIORITY			0xff
-#define configMAX_SYSCALL_INTERRUPT_PRIORITY	0xa0
-
+#ifdef TARGET_F407
+#define configMAX_SYSCALL_INTERRUPT_PRIORITY	(0xa << 4)
+#endif
+#ifdef TARGET_F091
+#define configMAX_SYSCALL_INTERRUPT_PRIORITY	(2 << 6)
+#endif
 //#define configASSERT( ( x ) )               if( ( x ) == 0 ) vCallAssert( __FILE__, __LINE__ )
 
 #define INCLUDE_vTaskPrioritySet                1
