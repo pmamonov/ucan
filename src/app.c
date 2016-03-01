@@ -13,6 +13,7 @@
 #include "usb_conf.h"
 #include "usbd_desc.h"
 #include "stm32f4xx_gpio.h"
+#include "f4d_leds.h"
 #endif
 
 #ifdef TARGET_F091
@@ -67,12 +68,11 @@ int main(void)
 	/* Required by the FreeRTOS */
 	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
 
-	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOD, ENABLE);
-	sGPIOinit.GPIO_Pin = LED_PIN;
-	sGPIOinit.GPIO_Mode = GPIO_Mode_OUT;
-	sGPIOinit.GPIO_Speed = GPIO_Speed_25MHz;
-	sGPIOinit.GPIO_OType = GPIO_OType_PP;
+	led_init(&f4d_led_blue);
+	led_init(&f4d_led_orange);
+	led_init(&f4d_led_green);
 #endif /* TARGET_F407 */
+
 #ifdef TARGET_F091
 	RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOA, ENABLE);
 	sGPIOinit.GPIO_Pin = LED_PIN;
@@ -371,12 +371,26 @@ cmd_finish:
 
 void task_blink(void *vpars)
 {
+#ifdef TARGET_F407
+	led_init(&f4d_led_blue);
+	led_init(&f4d_led_orange);
+	led_init(&f4d_led_green);
+	while (1) {
+		led_toggle(&f4d_led_blue);
+		led_off(&f4d_led_orange);
+		led_off(&f4d_led_green);
+		vTaskDelay(100);
+	}
+#endif /* TARGET_F407 */
+
+#ifdef TARGET_F091
 	while (1) {
 		GPIO_SetBits(LED_GPIO, LED_PIN);
 		vTaskDelay(100);
 		GPIO_ResetBits(LED_GPIO, LED_PIN);
 		vTaskDelay(100);
 	}
+#endif /* TARGET_F091 */
 }
 
 void task_can(void *vpars)

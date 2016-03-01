@@ -148,10 +148,6 @@ void can_init()
 	queue_init(&rx_queue_isr, sizeof(rx_msg_isr[0]), RX_QUEUE_LEN, &rx_msg_isr[0]);
 	NVIC_Config();
 	CAN_Config();
-#ifdef TARGET_F407
-	led_init(&f4d_led_orange);
-	led_init(&f4d_led_green);
-#endif
 };
 
 int can_recv(unsigned char *msg)
@@ -208,9 +204,6 @@ void can_xmit(unsigned int id, unsigned char *data, int len)
 	memcpy(TxMessage.Data, data, len);
 	while (CAN_Transmit(CANx, &TxMessage) == CAN_TxStatus_NoMailBox)
 		;
-#ifdef TARGET_F407
-	led_off(&f4d_led_orange);
-#endif
 }
 
 void can_dump_tx()
@@ -270,7 +263,4 @@ void CEC_CAN_IRQHandler(void)
 			can_stat.brecv += RxMessage.DLC;
 		}
 	}
-#ifdef TARGET_F407
-	led_off(&f4d_led_green);
-#endif
 }
