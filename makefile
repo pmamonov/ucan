@@ -3,7 +3,10 @@ TARGET = F407
 #TARGET = F091
 endif
 
+ifeq ($(strip $(CROSS_COMPILE)),)
 CROSS_COMPILE	= arm-none-eabi-
+endif
+
 AS		= $(CROSS_COMPILE)as
 CC		= $(CROSS_COMPILE)gcc
 CXX		= $(CROSS_COMPILE)g++
@@ -107,3 +110,6 @@ load: main.bin
 
 inc/version.h:
 	sh -c 'echo "#define __VERSION \"$$(./setlocalversion)\""' > inc/version.h
+
+canecho: canecho.c
+	$(CC) -static -o $@ $<
