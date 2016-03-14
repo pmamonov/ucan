@@ -28,10 +28,15 @@
 #include "delay.h"
 #include "version.h"
 
-#define TXRXDELTA 	RX_QUEUE_LEN
-#define PING_TIMEOUT	(TXRXDELTA / 10)
-static volatile uint32_t ping_pending[TXRXDELTA];
+#define TXRXDELTAMAX	256
+
+static volatile uint32_t ping_pending[TXRXDELTAMAX];
 static volatile int ping_rx, ping_tx, ping_pending_count, ping_trace;
+static volatile int txrxdelta = TXRXDELTAMAX;
+static volatile int timeout = TXRXDELTAMAX / 10 + 1;
+
+#define TXRXDELTA	(txrxdelta)
+#define PING_TIMEOUT	(timeout)
 
 #ifdef TARGET_F407
 #define PS1 "uCAN-F407" __VERSION "> "
@@ -352,6 +357,30 @@ void task_chat(void *vpars)
 				};
 				id = strtoul(tk, NULL, 0x10);
 				can_filter_setup(id, 0x7ff);
+			} else if (strcmp(tk, "txrxdelta") == 0) {
+				unsigned int id;
+
+				tk = strtok(NULL, " ");
+				if (tk == NULL) {
+					printf("%d\r\n", txrxdelta);
+					goto cmd_finish;
+				};
+				txrxdelta = strtoul(tk, NULL, 10);
+				if (txrxdelta < 1)
+					txrxdelta = 1;
+				if (txrxdelta > TXRXDELTAMAX)
+					txrxdelta = TXRXDELTAMAX;
+			} else if (strcmp(tk, "timeout") == 0) {
+				unsigned int id;
+
+				tk = strtok(NULL, " ");
+				if (tk == NULL) {
+					printf("%d\r\n", timeout);
+					goto cmd_finish;
+				};
+				timeout = strtoul(tk, NULL, 10);
+				if (timeout < 1)
+					timeout = 1;
 			} else {
 				printf("unknown command `%s`\r\n", tk);
 			}
