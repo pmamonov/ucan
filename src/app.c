@@ -173,7 +173,7 @@ static void can_ping(int id, int count)
 {
 	TickType_t tim, timp;
 	struct can_msg msg;
-	int pending, max = 0, i;
+	int pending, max = 0, i, ping_tout = 0;
 
 	msg.type = CAN_MSG_PING;
 	msg.sender = can_id;
@@ -196,8 +196,8 @@ static void can_ping(int id, int count)
 				taskDISABLE_INTERRUPTS();
 				memset(ping_pending, 0, sizeof(ping_pending));
 				ping_pending_count = 0;
+				ping_tout += 1;
 				taskENABLE_INTERRUPTS();
-				printf("timeout\r\n");
 				break;
 			}
 			vTaskDelay(1);
@@ -216,6 +216,7 @@ static void can_ping(int id, int count)
 	vTaskDelay(PING_TIMEOUT);
 	tim = xTaskGetTickCount() - tim;
 	printf("Max pending: %d\r\n", max);
+	printf("# timeouts: %d\r\n", ping_tout);
 	printf("TX: %d\r\n", ping_tx);
 	printf("RX: %d\r\n", ping_rx);
 	printf("Time: %d ms\r\n", tim);
