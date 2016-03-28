@@ -218,7 +218,17 @@ static void can_ping(int id, int count)
 		ping_tx += 1;
 	}
 
-	vTaskDelay(PING_TIMEOUT);
+	timp = xTaskGetTickCount();
+	taskDISABLE_INTERRUPTS();
+	pending = ping_pending_count;
+	taskENABLE_INTERRUPTS();
+	while (pending && (xTaskGetTickCount() - timp < PING_TIMEOUT)) {
+		vTaskDelay(1);
+		taskDISABLE_INTERRUPTS();
+		pending = ping_pending_count;
+		taskENABLE_INTERRUPTS();
+	}
+
 	tim = xTaskGetTickCount() - tim;
 	printf("Max pending: %d\r\n", max);
 	printf("# timeouts: %d\r\n", ping_tout);
